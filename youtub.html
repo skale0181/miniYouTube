@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="youtub.css">
+</head>
+<style>
+  
+    
+
+
+
+</style>
+
+<body>
+    
+    <div class="navbar">
+  
+    <div class="logomenu"><div class="menu"><i class="fas fa-bars"></i></div><div class="logo"><img src="https://www.logo.wine/a/logo/YouTube/YouTube-White-Full-Color-Dark-Background-Logo.wine.svg" alt=""></div></div>
+    <div class="searchbar">
+        <input type="text" id="video">
+        <button onclick="searchVideo()">Search</button>
+        <i class="fas fa-microphone"></i>
+    </div>
+    <div class="option">
+        <i class="fas fa-video"></i>
+        <i class="fas fa-th"></i>
+        <i class="far fa-bell"></i>
+        <i class="fas fa-user-circle"></i>
+    </div>
+    
+</div>
+<div class="container">
+    <div class="left">
+        <div class="left1">
+
+            <div class="home"><i class="fas fa-home"></i> Home</div>
+            <div class="explore"><i class="fas fa-tachometer-alt"></i>Explore</div>
+            <div class="subscription"><i class="fas fa-photo-video"></i>Subscription</div>
+
+        </div>
+        <div class="left2">
+            <div class="library"><i class="fas fa-file-video"></i>Library</div>
+            <div class="history"><i class="fas fa-history"></i>History</div>
+            <div class="yourvideo"><i class="fab fa-youtube"></i>Your Videos</div>
+            <div class="witchlatter"><i class="far fa-clock"></i>Watch Later</div>
+            <div class="likedvideo"><i class="far fa-thumbs-up"></i>Liked Videos</div>
+            <div class="showmore"><i>⌄</i> Show more</div>
+        </div>
+        <div class="left3">
+            <div class="setting"><i class="fas fa-cog"></i>Setting</div>
+            <div class="report"><i class="far fa-flag"></i>Report</div>
+            <div class="help"><i class="far fa-question-circle"></i>Help</div>
+            <div class="sendfeedback"><i class="far fa-comment-alt"></i>Send feedback</div>
+        </div>
+        <!-- <div class="left4"></div> -->
+    </div>
+    <div class="upper">
+        <div>All</div>
+        <div>Music</div>
+        <div>mix</div>
+        <div>Sci-fic</div>
+        <div>Comedies</div>
+        <div>Movies</div>
+        <div>Thrillers</div>
+        <div>Gaming</div>
+        <div>Marathi Cinema</div>
+        <div>Hot songs</div>
+        <div>Chill out music</div>
+    </div>
+    <div class="right"  id="search_results"></div>
+</div>
+<!-- <div id="search_results"></div> -->
+</body>
+</html>
+<script>
+    
+    
+    let API = "AIzaSyCv7K753HxUbPa5onF4ewgN5kg_G_Eti8c";
+    const results_div = document.getElementById("search_results");
+    
+    async function searchVideo(){
+        try{
+            
+            results_div.innerHTML = null;
+        
+        let video_query = document.getElementById("video").value;
+
+        let res = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=${video_query}&type=vedio&key=${API}&maxResults=40`)
+
+        let data =await res.json()
+         console.log(data)
+        let videos = data.items;
+
+        appendVideos(videos);            // call appendVideos function
+
+        }
+        catch(err){
+            console.log("err:", err);
+        }      
+    }
+
+//   /// function appendVideos(video){
+//   ///      video.forEach((ele)=>{
+//  ///          console.log(ele);
+//  ///      })   
+//  //   }
+//    /// /////OR////////
+
+    let appendVideos = (video)=>{
+        video.forEach((ele) => {
+           
+            // results_div.innerHTML = null;
+
+            
+            let {snippet,id:{videoId}} = ele;    //// ES6 syntax--> it is like (ele.id.videoId)
+                
+                
+                // console.log("videoId:",  videoId);        //// ****here we can also eleminate video which are undefined videoId
+                // console.log("snippet:",  snippet);        //// ****here we can also eleminate video which are undefined videoId
+                
+                
+                // let iframe = document.createElement("iframe");
+                
+                // iframe.src = `https://www.youtube.com/embed/${videoId}`
+                // iframe.height = "170"
+                // iframe.width = "260"
+                // iframe.allowFullscreen = true;       
+                
+                let title = document.createElement("p");
+            title.innerText = snippet.title;
+
+            let thumbnails = document.createElement("img");
+            thumbnails.src = snippet.thumbnails.medium.url
+           
+                
+                let div = document.createElement("div")
+                div.append(thumbnails,title)
+
+            let data_store = {
+                snippet,
+                videoId
+            }
+
+            div.onclick = ()=>{
+                videoShow(data_store)
+            }
+
+            results_div.append(div);
+
+
+
+    
+
+
+        });
+
+    }
+
+    function videoShow(data_store){
+        localStorage.setItem("yt_video", JSON.stringify(data_store));
+
+        window.location.href = "videoShow.html"
+    }
+
+
+    ///visible videos
+
+    async function visibleVideo(){
+        try{
+            
+            results_div.innerHTML = null;
+        
+        let video_query = document.getElementById("video").value;
+
+        let res = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=musics&type=vedio&key=${API}&maxResults=40`)
+
+        let data =await res.json()
+         console.log(data)
+        let videos = data.items;
+
+        appendVideos(videos);            // call appendVideos function
+
+        }
+        catch(err){
+            console.log("err:", err);
+        }      
+    }
+    visibleVideo()
+  
+</script>
+<!-- `https://youtube.googleapis.com/youtube/v3/videos?part=snippet&chart=mostPopular&key=AIzaSyBEbWWdIdd6O7HLsJNyaKY7AoqlSO5t3rY&maxResults=30` -->

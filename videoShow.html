@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4CGR2D7kSs0v4LLanw2qksYuRlEzO+tcaEPQogQ0KaoGN26/zrn20ImR1DfuLWnOo7aBA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<style>
+    /* navbar */
+    body{
+        background-color: black;
+        color: white;
+        font-family: Roboto, Arial, sans-serif;
+        line-height: 28px;
+        font-size: 14px;
+    }
+    .navbar{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: auto;
+        width: 100%;
+        height: 60px;
+        background-color:rgb(40,40,40);
+        /* border: 2px solid rgb(218, 214, 214); */
+    }
+   
+    i{
+        color: rgb(214, 203, 203);
+        font-size: 25px;
+        cursor: pointer;
+    }
+    .logomenu{
+        display: flex;
+        width: 17%;
+        height: 100%;
+        /* border: 1px solid; */
+    }
+    .menu{
+        width: 20%;
+        height: 100%;
+        display: grid;
+        align-items: center;
+        justify-content: center;
+    }
+    .logo{
+        width: 60%;
+        height: 100%;
+        /* border: 1px solid red; */
+    }
+    .logo>img{
+        width: 100%;
+        height: 100%;
+    }
+     
+    .searchbar{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 40%;
+        height: 100%;
+        /* border: 1px solid; */
+    }
+    #video{
+        height: 50%;
+        color: white;
+        width: 70%;
+        background-color: rgb(27, 27, 27);
+        border: 1px solid rgb(48, 47, 47);
+    }
+    .searchbar>button{
+        height: 57%;
+        background-color: gray;
+        border: 1px solid rgb(48, 47, 47);
+    }
+    .fa-microphone{
+        margin-left: 10px;
+    }
+
+    .option{
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        width: 20%;
+        height: 100%;
+
+    }
+    /*  */
+   
+   
+    #main{
+        display: flex;
+        /* width: 100%; */
+    }
+    #videodetails{
+        margin-top: 20px;
+        max-height: 500px;
+        flex: 3;
+        /* border: 1px solid transparent; */
+    }
+    #recommendation{
+        height: 550px;
+        overflow-y: scroll;
+        flex: 2;
+    }
+    #recommendation>div{
+        margin: 17px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 90%;
+        height: 170px;
+        /* border: 1px solid red; */
+    }
+    #recommendation>div>div:nth-child(1){
+        width: 55%;
+        height: 100%;
+        /* border: 1px solid yellow; */
+    }
+       div>img{
+        width: 100%;
+        height: 100%;
+    }
+    #recommendation>div>div:nth-child(2){
+        padding-right: 20px;
+        padding-left: 20px;
+        box-sizing: border-box;
+        width: 45%;
+        height: 90%;
+        /* border: 1px solid yellow; */
+    }
+
+</style>
+<body>
+
+    <div class="navbar">
+        <div class="logomenu">
+            <div class="menu"><i class="fas fa-bars"></i></div>
+            <div class="logo" onclick="gohome()">
+                <img src="https://www.logo.wine/a/logo/YouTube/YouTube-White-Full-Color-Dark-Background-Logo.wine.svg" alt="">
+            </div>
+            </div>
+        <div class="searchbar">
+            <input type="text" id="video">
+            <button onclick="searchVideo()">Search</button>
+            <i class="fas fa-microphone"></i>
+        </div>
+        <div class="option">
+            <i class="fas fa-video"></i>
+            <i class="fas fa-th"></i>
+            <i class="far fa-bell"></i>
+            <i class="fas fa-user-circle"></i>
+        </div>
+    </div>
+    <div id="main">
+        <div id="videodetails"></div>
+        <div id="recommendation">
+            
+    </div>
+    </div>
+    
+</body>
+</html>
+<script>
+/////go hooe///
+function gohome(){
+    window.location.href = "youtub.html"
+}
+
+
+
+
+    let data = JSON.parse(localStorage.getItem("yt_video"));
+    // console.log(data);
+
+    let div = document.getElementById("videodetails");
+
+    let iframe = document.createElement("iframe");
+
+    iframe.src = `https://www.youtube.com/embed/${data.videoId}`
+    iframe.width = "100%"
+    iframe.height = "100%"
+    iframe.allowFullscreen = true;
+
+    div.append(iframe)
+
+    
+
+    async function recommendation(){
+
+        try{
+            let res = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&q=musics&type=vedio&key=AIzaSyDaOYXn15Z10jX89tmjLGpb4NIAnaw8f1I&maxResults=30`)
+
+            let data = await res.json();
+
+            // console.log("data:", data);
+
+            let videos = data.items;
+            showRecommendation(videos)
+            // console.log(videos)
+        }
+        catch(err){
+            console.log("err:",err)
+        }
+
+
+    }
+    recommendation()
+
+    function showRecommendation(data){
+        data.forEach((ele)=>{
+
+            let {snippet,id:{videoId}} = ele;
+
+            console.log("ele:",snippet);
+
+            let div = document.createElement("div");
+
+            let d1 = document.createElement("div");
+
+            let d2 = document.createElement("div");
+
+            let thumbnail = document.createElement("img");
+            thumbnail.src = snippet.thumbnails.medium.url;
+
+            let p = document.createElement("p");
+            p.innerText = snippet.title;
+
+            d1.append(thumbnail)
+            d2.append(p)
+
+            div.append(d1,d2);
+
+            document.getElementById("recommendation").append(div)
+
+            let data_store = {
+                snippet,
+                videoId
+            }
+
+            div.onclick = ()=>{
+                showVideo(data_store)
+            }
+
+
+
+        })
+    }
+
+    
+    function showVideo(data_store){
+        localStorage.setItem("yt_video", JSON.stringify(data_store));
+
+        data = JSON.parse(localStorage.getItem("yt_video"));
+
+        let div = document.getElementById("videodetails");
+        div.innerHTML = null;
+
+    let iframe = document.createElement("iframe");
+
+    iframe.src = `https://www.youtube.com/embed/${data.videoId}`
+    iframe.width = "100%"
+    iframe.height = "100%"
+    iframe.allowFullscreen = true;
+
+    div.append(iframe)
+        
+    }
+
+
+</script>
